@@ -1,0 +1,45 @@
+//
+//  PrefixHeader.pch
+//  Api-Examples-iOS
+//
+//  Created by WorkSpace_Sun on 2021/11/24.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#import "CameraVideoExample.h"
+#import "CustomVideoExample.h"
+#import "ScreenRecordExample.h"
+#import "MicrophoneAudioExample.h"
+#import "CustomAudioExample.h"
+#import "SwitchRoomExample.h"
+#import "MultiRoomsExample.h"
+#import "DirectLiveExample.h"
+#import "TranscodingLiveDefaultExample.h"
+#import "TranscodingLiveCustomExample.h"
+#import "AudioMixExample.h"
+#import "SendMessageExample.h"
+#import "MultiProfileExample.h"
+#import "ConnectQualityExample.h"
+
+#import "BaseViewController.h"
+
+#import <Masonry/Masonry.h>
+#import <QNRTCKit/QNRTCKit.h>
+
+#define SCREEN_WIDTH   [UIScreen mainScreen].bounds.size.width
+#define SCREEN_HEIGHT   [UIScreen mainScreen].bounds.size.height
+#define IS_FULL_SCREEN_SERIOUS @available(iOS 11.0, *) && UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom > 0.0
+
+//static NSString *ROOM_TOKEN = <#输入您的房间 Token，Token 生成方式参考 https://developer.qiniu.com/rtc/8813/roomToken#>
+//static NSString *PUBLISH_URL = <#输入自定义转推 rtmp 地址#>
+
+//static NSString *ROOM_TOKEN = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:gI9DKvKxaSd0EFaLd8l7-KbhMkw=:eyJhcHBJZCI6ImYyNGNvNW1kMyIsImV4cGlyZUF0IjoxNjY4MDYzMDMwLCJwZXJtaXNzaW9uIjoidXNlciIsInJvb21OYW1lIjoicWluaXUiLCJ1c2VySWQiOiJpb3N0ZXN0In0=";
+static NSString *ROOM_TOKEN = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:t1UV_sSI7ZGivfncs1LbhwOpgDo=:eyJhcHBJZCI6ImYyNGNvNW1kMyIsImV4cGlyZUF0IjoxNjcwNDAwNDAwLCJwZXJtaXNzaW9uIjoidXNlciIsInJvb21OYW1lIjoicWluaXUiLCJ1c2VySWQiOiJpb3N0ZXN0MiJ9";
+static NSString *PUBLISH_URL = @"rtmp://pili-publish.live.qiniu.pursue.show/pursue-online/Sun";
+
+#endif /* PrefixHeader_pch */

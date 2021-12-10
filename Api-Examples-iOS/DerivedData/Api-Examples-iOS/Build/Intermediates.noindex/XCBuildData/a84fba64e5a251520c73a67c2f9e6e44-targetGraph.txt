@@ -1,0 +1,9 @@
+Target dependency graph (4 targets)
+Masonry in Pods, no dependencies
+QNRTCKit-iOS in Pods, no dependencies
+Pods-Api-Examples-iOS in Pods, depends on:
+Masonry in Pods (explicit)
+QNRTCKit-iOS in Pods (explicit)
+Api-Examples-iOS in Api-Examples-iOS, depends on:
+Pods-Api-Examples-iOS in Pods (implicit dependency via file 'Pods_Api_Examples_iOS.framework' in build phase 'Link Binary')
+Masonry in Pods (implicit dependency via options '-framework Masonry' in build setting 'OTHER_LDFLAGS')

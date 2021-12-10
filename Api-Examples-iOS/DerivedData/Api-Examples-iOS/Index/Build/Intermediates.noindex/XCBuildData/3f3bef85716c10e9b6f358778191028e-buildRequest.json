@@ -1,0 +1,61 @@
+{
+  "_buildCommand2" : {
+    "command" : "prepareForIndexing",
+    "enableIndexBuildArena" : true,
+    "targets" : null
+  },
+  "buildCommand" : "build",
+  "configuredTargets" : [
+    {
+      "guid" : "dee1f50c8ffc080a68d0eaeb9306196121cbf158e7132ffe0210d64b7771366f"
+    }
+  ],
+  "containerPath" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/Api-Examples-iOS.xcworkspace",
+  "continueBuildingAfterErrors" : true,
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "indexbuild",
+    "activeArchitecture" : "arm64",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : false,
+      "platform" : "iphoneos",
+      "sdk" : "iphoneos15.0",
+      "sdkVariant" : "iphoneos",
+      "supportedArchitectures" : [
+        "arm64v8",
+        "arm64",
+        "armv8"
+      ],
+      "targetArchitecture" : "arm64"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/DerivedData/Api-Examples-iOS/Index/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/DerivedData/Api-Examples-iOS/Index/Build/Products",
+      "derivedDataPath" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/DerivedData",
+      "indexDataStoreFolderPath" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/DerivedData/Api-Examples-iOS/Index/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/DerivedData/Api-Examples-iOS/Index/PrecompiledHeaders",
+      "pchPath" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/DerivedData/Api-Examples-iOS/Index/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "synthesized" : {
+        "table" : {
+          "ENABLE_PREVIEWS" : "NO",
+          "INDEX_ARENA_INFO_REGULAR_BUILD_PRODUCTS_DIR" : "/Users/workspace_sun/Pursue_workspace/QNRTC-API-Examples/Api-Examples-iOS/DerivedData/Api-Examples-iOS/Build/Products",
+          "ONLY_ACTIVE_ARCH" : "YES"
+        }
+      }
+    }
+  },
+  "qos" : "default",
+  "schemeCommand" : "launch",
+  "schemeCommand2" : "launch",
+  "shouldCollectMetrics" : false,
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

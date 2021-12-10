@@ -1,0 +1,22 @@
+PODS:
+  - Masonry (1.1.0)
+  - QNRTCKit-iOS (4.0.0):
+    - QNRTCKit-iOS/Core (= 4.0.0)
+  - QNRTCKit-iOS/Core (4.0.0)
+
+DEPENDENCIES:
+  - Masonry (= 1.1.0)
+  - QNRTCKit-iOS (= 4.0.0)
+
+SPEC REPOS:
+  trunk:
+    - Masonry
+    - QNRTCKit-iOS
+
+SPEC CHECKSUMS:
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  QNRTCKit-iOS: 9e6f1874b5800bb9a605786a51cf6e22e69975fe
+
+PODFILE CHECKSUM: 794239e6fd9298481b96a7d209657bcf65e14c92
+
+COCOAPODS: 1.11.2
