@@ -16,67 +16,73 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="当前订阅的 profile：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qf3-Fz-NwZ">
-                    <rect key="frame" x="30" y="74" width="122" height="16"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <rect key="frame" x="30" y="74" width="139.5" height="18"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <color key="textColor" systemColor="systemGrayColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="设置预期订阅的 profile：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M2F-KN-WpD">
-                    <rect key="frame" x="30" y="120" width="148.5" height="16"/>
+                    <rect key="frame" x="30" y="122" width="170" height="16"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="16" id="NKG-MV-chh"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <color key="textColor" systemColor="systemGrayColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="None" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q8J-9f-hl3">
-                    <rect key="frame" x="212" y="71.5" width="41" height="21"/>
+                    <rect key="frame" x="229.5" y="72.5" width="41" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="Uir-9d-9Tx"/>
                         <constraint firstAttribute="width" constant="41" id="mLC-Z0-fjg"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
+                    <color key="textColor" systemColor="linkColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Scl-n3-cr4" customClass="RadioButton">
-                    <rect key="frame" x="60" y="166" width="44" height="18"/>
+                    <rect key="frame" x="60" y="168" width="44" height="18"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="18" id="3j6-xS-5lo"/>
                         <constraint firstAttribute="width" constant="44" id="el9-wC-6MC"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <state key="normal" title="Low" image="unselect.png">
+                    <state key="normal" title=" Low" image="unselect.png">
                         <color key="titleColor" systemColor="systemGrayColor"/>
                     </state>
-                    <state key="selected" image="selected.png"/>
+                    <state key="selected" image="selected.png">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
                     <connections>
                         <outletCollection property="groupButtons" destination="Gbc-AV-kyT" id="wS4-JV-9WY"/>
                         <outletCollection property="groupButtons" destination="7X2-kn-FiK" id="uqF-fQ-GH5"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7X2-kn-FiK" customClass="RadioButton">
-                    <rect key="frame" x="334" y="166" width="48" height="18"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <rect key="frame" x="334" y="169" width="48" height="16"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <state key="normal" title="High" image="unselect.png">
+                    <state key="normal" title=" High" image="unselect.png">
                         <color key="titleColor" systemColor="systemGrayColor"/>
                     </state>
-                    <state key="selected" image="selected.png"/>
+                    <state key="selected" image="selected.png">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gbc-AV-kyT" customClass="RadioButton">
-                    <rect key="frame" x="185.5" y="166" width="71" height="18"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <rect key="frame" x="186.5" y="169" width="69" height="16"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <state key="normal" title="Medium" image="unselect.png">
+                    <state key="normal" title=" Medium" image="unselect.png">
                         <color key="titleColor" systemColor="systemGrayColor"/>
                     </state>
-                    <state key="selected" image="selected.png"/>
+                    <state key="selected" image="selected.png">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yrD-uF-mbk">
-                    <rect key="frame" x="60" y="214" width="322" height="32"/>
+                    <rect key="frame" x="60" y="216" width="322" height="32"/>
                     <color key="backgroundColor" systemColor="linkColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="32" id="cvK-RO-AZO"/>
@@ -84,10 +90,16 @@
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" title="切换"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.maskToBounds" value="YES"/>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="5"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                 </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="yrD-uF-mbk" firstAttribute="top" secondItem="Scl-n3-cr4" secondAttribute="bottom" constant="30" id="1Ax-eC-6VL"/>
                 <constraint firstItem="yrD-uF-mbk" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="60" id="9pX-CE-wJ6"/>
@@ -107,6 +119,7 @@
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="currentProfileTF" destination="Q8J-9f-hl3" id="dPh-oH-34A"/>
                 <outlet property="highButton" destination="7X2-kn-FiK" id="rBR-a8-8ik"/>
                 <outlet property="lowButton" destination="Scl-n3-cr4" id="D6L-ms-ZYw"/>
                 <outlet property="mediumButton" destination="Gbc-AV-kyT" id="Zjf-dh-hoT"/>
@@ -120,9 +133,6 @@
         <image name="unselect.png" width="16" height="16"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGrayColor">
             <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

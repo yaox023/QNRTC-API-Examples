@@ -117,14 +117,32 @@
     });
 }
 
+- (void)setTips:(NSString *)tips {
+    if ([_tips isEqualToString:tips]) return;
+    _tips = tips;
+    self.tipsView.text = _tips;
+    CGFloat tipsWidth = SCREEN_WIDTH - 60.0;;
+    CGRect tipsRect = [_tips boundingRectWithSize:CGSizeMake(tipsWidth, MAXFLOAT)
+                                          options:NSStringDrawingUsesFontLeading
+                       | NSStringDrawingTruncatesLastVisibleLine
+                       | NSStringDrawingUsesLineFragmentOrigin
+                                       attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:12]}
+                                          context:nil];
+    [self.tipsView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(tipsRect.size.height);
+    }];
+}
+
 #pragma mark - Lazy Loading
 - (UILabel *)localView {
     if (!_localView) {
         _localView = [[UILabel alloc] initWithFrame:CGRectZero];
-        _localView.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:240 / 255.0 blue:240 / 255.0 alpha:1.0];
+        _localView.backgroundColor = [UIColor colorWithRed:242 / 255.0 green:242 / 255.0 blue:247 / 255.0 alpha:1.0];
         _localView.textColor = [UIColor grayColor];
         _localView.font = [UIFont systemFontOfSize:13];
         _localView.textAlignment = NSTextAlignmentCenter;
+        _localView.layer.masksToBounds = YES;
+        _localView.layer.cornerRadius = 10;
         [self.view addSubview:_localView];
     }
     return _localView;
@@ -133,10 +151,12 @@
 - (UILabel *)remoteView {
     if (!_remoteView) {
         _remoteView = [[UILabel alloc] initWithFrame:CGRectZero];
-        _remoteView.backgroundColor = [UIColor colorWithRed:240 / 255.0 green:240 / 255.0 blue:240 / 255.0 alpha:1.0];
+        _remoteView.backgroundColor = [UIColor colorWithRed:242 / 255.0 green:242 / 255.0 blue:247 / 255.0 alpha:1.0];
         _remoteView.textColor = [UIColor grayColor];
         _remoteView.font = [UIFont systemFontOfSize:13];
         _remoteView.textAlignment = NSTextAlignmentCenter;
+        _remoteView.layer.masksToBounds = YES;
+        _remoteView.layer.cornerRadius = 10;
         [self.view addSubview:_remoteView];
     }
     return _remoteView;
@@ -145,10 +165,13 @@
 - (UIScrollView *)controlScrollView {
     if (!_controlScrollView) {
         _controlScrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+        _controlScrollView.backgroundColor = [UIColor colorWithRed:242 / 255.0 green:242 / 255.0 blue:247 / 255.0 alpha:1.0];
         _controlScrollView.contentSize = CGSizeMake(SCREEN_WIDTH, 1);
-        _controlScrollView.bounces = NO;
+        _controlScrollView.bounces = YES;
         _controlScrollView.showsVerticalScrollIndicator = YES;
         [_controlScrollView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(controlScrollViewDidTap)]];
+        _controlScrollView.layer.masksToBounds = YES;
+        _controlScrollView.layer.cornerRadius = 20;
         [self.view addSubview:_controlScrollView];
     }
     return _controlScrollView;

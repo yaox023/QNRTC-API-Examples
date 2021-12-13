@@ -15,7 +15,7 @@
             <rect key="frame" x="0.0" y="0.0" width="478" height="287"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="发送消息：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XJF-pZ-bbi">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="消息文本：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XJF-pZ-bbi">
                     <rect key="frame" x="30" y="104" width="67" height="16"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="67" id="R5i-vT-JhK"/>
@@ -37,11 +37,11 @@
                         <constraint firstAttribute="height" constant="31" id="DfQ-o5-Nmf"/>
                     </constraints>
                     <state key="normal" title="Button"/>
-                    <buttonConfiguration key="configuration" style="plain" title="Send"/>
+                    <buttonConfiguration key="configuration" style="plain" title="发送"/>
                 </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="XJF-pZ-bbi" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="8a5-sD-z4K"/>
                 <constraint firstItem="XJF-pZ-bbi" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="60" id="C52-Uu-Xq8"/>
@@ -60,9 +60,6 @@
         </view>
     </objects>
     <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemGrayColor">
             <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

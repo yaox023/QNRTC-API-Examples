@@ -10,14 +10,13 @@
 
 @interface TranscodingLiveDefaultExample () <QNRTCClientDelegate>
 
-@property (nonatomic, strong) TranscodingLiveDefaultControlView *controlView;
-
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCameraVideoTrack *cameraVideoTrack;
 @property (nonatomic, strong) QNMicrophoneAudioTrack *microphoneAudioTrack;
 @property (nonatomic, strong) QNGLKView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
 @property (nonatomic, strong) QNTranscodingLiveStreamingConfig *transcodingLiveStreamingConfig;
+@property (nonatomic, strong) TranscodingLiveDefaultControlView *controlView;
 @property (nonatomic, copy) NSString *remoteUserID;
 
 @end
@@ -27,7 +26,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
     [self loadSubviews];
     [self initRTC];
 }
@@ -51,11 +49,11 @@
 - (void)loadSubviews {
     self.localView.text = @"本端视图";
     self.remoteView.text = @"远端视图";
-    self.tipsView.text = @"Tips：\n"
-    "1.本示例仅展示一对一场景下使用默认合流配置创建合流转推的功能。\n"
-    "2.使用转推功能需要在七牛后台开启对应 AppId 的转推功能开关。\n"
-    "3.默认合流任务使用七牛控制台下该 AppId 的配置，无需客户端创建。\n"
-    "4.添加布局即可触发合流转推，可以到 AppId 绑定的直播空间下查看活跃流。";
+    self.tips = @"Tips：\n"
+    "1. 本示例仅展示一对一场景下使用默认合流配置创建合流任务的功能。\n"
+    "2. 使用转推功能需要在七牛后台开启对应 AppId 的转推功能开关。\n"
+    "3. 默认合流任务使用七牛控制台下该 AppId 的合流配置，无需客户端创建。\n"
+    "4. 添加布局即可触发合流转推，可以到 AppId 绑定的直播空间下查看活跃流。";
     
     // 添加转推控制视图
     self.controlView = [[[NSBundle mainBundle] loadNibNamed:@"TranscodingLiveDefaultControlView" owner:nil options:nil] lastObject];
@@ -65,7 +63,7 @@
     [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.equalTo(self.controlScrollView);
         make.width.mas_equalTo(SCREEN_WIDTH);
-        make.height.mas_equalTo(1050);
+        make.height.mas_equalTo(560);
     }];
     [self.controlView layoutIfNeeded];
     self.controlScrollView.contentSize = self.controlView.frame.size;
@@ -256,8 +254,45 @@
             [self showAlertWithTitle:@"房间状态" message:@"已加入房间"];
             [self publish];
         } else if (state == QNConnectionStateIdle) {
-            // 空闲  此时应查看回调 info 的具体信息做进一步处理
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", info.error.localizedDescription]];
+            // 空闲状态  此时应查看回调 info 的具体信息做进一步处理
+            switch (info.reason) {
+                case QNConnectionDisconnectedReasonKickedOut: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：被踢出房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonLeave: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：主动离开房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomClosed: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间已关闭" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomFull: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间人数已满" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonError: {
+                    NSString *errorMessage = info.error.localizedDescription;
+                    if (info.error.code == QNRTCErrorReconnectTokenError) {
+                        errorMessage = @"重新进入房间超时";
+                    }
+                    [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", errorMessage] cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
         } else if (state == QNConnectionStateReconnecting) {
             // 重连中
             [self showAlertWithTitle:@"房间状态" message:@"重连中"];

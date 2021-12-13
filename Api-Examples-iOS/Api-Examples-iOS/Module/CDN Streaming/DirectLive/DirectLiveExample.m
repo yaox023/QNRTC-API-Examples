@@ -10,16 +10,15 @@
 
 @interface DirectLiveExample () <QNRTCClientDelegate>
 
-@property (nonatomic, strong) DirectLiveControlView *controlView;
-@property (nonatomic, assign) BOOL isStreaming;
-
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCameraVideoTrack *cameraVideoTrack;
 @property (nonatomic, strong) QNMicrophoneAudioTrack *microphoneAudioTrack;
 @property (nonatomic, strong) QNGLKView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
 @property (nonatomic, strong) QNDirectLiveStreamingConfig *directLiveStreamingConfig;
+@property (nonatomic, strong) DirectLiveControlView *controlView;
 @property (nonatomic, copy) NSString *remoteUserID;
+@property (nonatomic, assign) BOOL isStreaming;
 
 @end
 
@@ -28,7 +27,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
     self.isStreaming = NO;
     [self loadSubviews];
     [self initRTC];
@@ -53,7 +51,7 @@
 - (void)loadSubviews {
     self.localView.text = @"本端视图";
     self.remoteView.text = @"远端视图";
-    self.tipsView.text = @"Tips：本示例仅展示一对一场景下本地或远端音视频 Track 的单路转推功能，使用转推功能需要在七牛后台开启对应 AppId 的转推功能开关。";
+    self.tips = @"Tips：本示例仅展示一对一场景下本地或远端音视频 Track 的单路转推功能，使用转推功能需要在七牛后台开启对应 AppId 的转推功能开关。";
     
     // 添加转推控制视图
     self.controlView = [[[NSBundle mainBundle] loadNibNamed:@"DirectLiveControlView" owner:nil options:nil] lastObject];
@@ -148,20 +146,20 @@
         return;
     }
     
-    // 校验转推地址
-    if ([self.controlView.publishUrlTF.text isEqualToString:@""]) {
-        [self showAlertWithTitle:@"参数错误" message:@"请输入转推地址"];
-        return;
-    }
-    
     // 校验房间状态
     if (!(self.client.roomState == QNConnectionStateConnected || self.client.roomState == QNConnectionStateReconnected)) {
         [self showAlertWithTitle:@"状态提示" message:@"请先加入房间"];
         return;
     }
     
-    RadioButton *selectedButton = self.controlView.localUserButton.selectedButton;
-    if (selectedButton == self.controlView.localUserButton) {
+    // 校验转推地址
+    if ([self.controlView.publishUrlTF.text isEqualToString:@""]) {
+        [self showAlertWithTitle:@"参数错误" message:@"请输入转推地址"];
+        return;
+    }
+    
+    BOOL isLocal = (self.controlView.localUserButton.selectedButton == self.controlView.localUserButton);
+    if (isLocal) {
         // 创建单人转推，转推本地音视频 Track
         self.directLiveStreamingConfig = [[QNDirectLiveStreamingConfig alloc] init];
         self.directLiveStreamingConfig.publishUrl = self.controlView.publishUrlTF.text;
@@ -170,10 +168,12 @@
         self.directLiveStreamingConfig.audioTrack = self.microphoneAudioTrack;
         [self.client startLiveStreamingWithDirect:self.directLiveStreamingConfig];
 
-    } else if (selectedButton == self.controlView.remoteUserButton) {
-        // 检验远端是否加入，创建单人转推，转推远端音视频 Track（如果有多路则取第一路）
+    } else {
+        // 检验远端是否加入
         if (self.remoteUserID) {
             QNRemoteUser *remoteUser = [self.client getRemoteUser:self.remoteUserID];
+            
+            // 创建单人转推，转推远端音视频 Track（如果有多路则取第一路）
             self.directLiveStreamingConfig = [[QNDirectLiveStreamingConfig alloc] init];
             self.directLiveStreamingConfig.publishUrl = self.controlView.publishUrlTF.text;
             self.directLiveStreamingConfig.streamID = [NSString stringWithFormat:@"%@-%@", self.roomName, self.userID];
@@ -190,6 +190,12 @@
  * @abstract 停止转推。
  */
 - (void)stopLiveStreaming {
+    // 校验是否在转推中
+    if (!self.isStreaming) {
+        [self showAlertWithTitle:@"状态提示" message:@"请先开始转推任务"];
+        return;
+    }
+    
     // 检验房间状态
     if (!(self.client.roomState == QNConnectionStateConnected || self.client.roomState == QNConnectionStateReconnected)) {
         [self showAlertWithTitle:@"状态提示" message:@"请先加入房间"];
@@ -240,8 +246,45 @@
             [self showAlertWithTitle:@"房间状态" message:@"已加入房间"];
             [self publish];
         } else if (state == QNConnectionStateIdle) {
-            // 空闲  此时应查看回调 info 的具体信息做进一步处理
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", info.error.localizedDescription]];
+            // 空闲状态  此时应查看回调 info 的具体信息做进一步处理
+            switch (info.reason) {
+                case QNConnectionDisconnectedReasonKickedOut: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：被踢出房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonLeave: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：主动离开房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomClosed: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间已关闭" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomFull: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间人数已满" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonError: {
+                    NSString *errorMessage = info.error.localizedDescription;
+                    if (info.error.code == QNRTCErrorReconnectTokenError) {
+                        errorMessage = @"重新进入房间超时";
+                    }
+                    [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", errorMessage] cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
         } else if (state == QNConnectionStateReconnecting) {
             // 重连中
             [self showAlertWithTitle:@"房间状态" message:@"重连中"];

@@ -9,7 +9,6 @@
 
 @interface CustomAudioSource ()
 @property (nonatomic, assign) AudioStreamBasicDescription origASDB;
-@property (nonatomic, assign) AudioStreamBasicDescription destASDB;
 @property (nonatomic, strong) dispatch_queue_t audioOperationQueue;
 @property (nonatomic, assign) AUGraph graph;
 @property (nonatomic, assign) AudioUnit audioUnit;

@@ -10,12 +10,11 @@
 
 @interface CameraVideoExample () <QNRTCClientDelegate, QNCameraTrackVideoDataDelegate, QNRemoteTrackVideoDataDelegate>
 
-@property (nonatomic, strong) CameraVideoControlView *controlView;
-
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCameraVideoTrack *cameraVideoTrack;
 @property (nonatomic, strong) QNGLKView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
+@property (nonatomic, strong) CameraVideoControlView *controlView;
 @property (nonatomic, copy) NSString *remoteUserID;
 
 @end
@@ -25,7 +24,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
     [self loadSubviews];
     [self initRTC];
 }
@@ -49,7 +47,7 @@
 - (void)loadSubviews {
     self.localView.text = @"本端视图";
     self.remoteView.text = @"远端视图";
-    self.tipsView.text = @"Tips：本示例仅展示一对一场景下 SDK 内置摄像头采集视频 Track 的发布和订阅，以及基于摄像头视频 Track 的美颜功能。";
+    self.tips = @"Tips：本示例仅展示一对一场景下 SDK 内置摄像头采集视频 Track 的发布和订阅，以及基于摄像头视频 Track 的美颜功能。";
     
 // 添加美颜参数控制视图
     self.controlView = [[[NSBundle mainBundle] loadNibNamed:@"CameraVideoControlView" owner:nil options:nil] lastObject];
@@ -120,20 +118,19 @@
     [self.cameraVideoTrack setRedden:0.5];
     [self.cameraVideoTrack setWhiten:0.5];
     
-    // 开启本地预览
-    [self.cameraVideoTrack play:self.localRenderView];
-    
     // 设置回调代理
     self.cameraVideoTrack.videoDelegate = self;
     
+    // 开启本地预览
+    [self.cameraVideoTrack play:self.localRenderView];
     self.localRenderView.hidden = NO;
-
+    
     // 加入房间
     [self.client join:ROOM_TOKEN];
 }
 
 /*!
- * @abstract 发布相机视频 Track
+ * @abstract 发布
  */
 - (void)publish {
     __weak CameraVideoExample *weakSelf = self;
@@ -146,7 +143,7 @@
     }];
 }
 
-#pragma mark - Beauty Setting
+#pragma mark - 美颜设置相关
 /*!
  * @abstract 美颜开关
  */
@@ -202,8 +199,45 @@
             [self showAlertWithTitle:@"房间状态" message:@"已加入房间"];
             [self publish];
         } else if (state == QNConnectionStateIdle) {
-            // 空闲  此时应查看回调 info 的具体信息做进一步处理
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", info.error.localizedDescription]];
+            // 空闲状态  此时应查看回调 info 的具体信息做进一步处理
+            switch (info.reason) {
+                case QNConnectionDisconnectedReasonKickedOut: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：被踢出房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonLeave: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：主动离开房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomClosed: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间已关闭" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomFull: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间人数已满" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonError: {
+                    NSString *errorMessage = info.error.localizedDescription;
+                    if (info.error.code == QNRTCErrorReconnectTokenError) {
+                        errorMessage = @"重新进入房间超时";
+                    }
+                    [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", errorMessage] cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
         } else if (state == QNConnectionStateReconnecting) {
             // 重连中
             [self showAlertWithTitle:@"房间状态" message:@"重连中"];
@@ -250,6 +284,7 @@
 - (void)RTCClient:(QNRTCClient *)client didDetachRenderTrack:(QNRemoteVideoTrack *)videoTrack remoteUserID:(NSString *)userID {
     // 移除当前渲染的远端用户的视图
     if ([userID isEqualToString:self.remoteUserID]) {
+        videoTrack.videoDelegate = nil;
         [videoTrack play:nil];
         self.remoteRenderView.hidden = YES;
     }

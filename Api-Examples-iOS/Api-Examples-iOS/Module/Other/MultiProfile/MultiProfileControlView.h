@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MultiProfileControlView : UIView
+@property (weak, nonatomic) IBOutlet UILabel *currentProfileTF;
 @property (weak, nonatomic) IBOutlet UIButton *switchProfileButton;
 @property (weak, nonatomic) IBOutlet RadioButton *lowButton;
 @property (weak, nonatomic) IBOutlet RadioButton *mediumButton;

@@ -10,11 +10,10 @@
 
 @interface CustomAudioExample () <QNRTCClientDelegate, CustomAudioSourceDelegate>
 
-@property (nonatomic, strong) CustomAudioSource *audioSource;
-
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCustomAudioTrack *customAudioTrack;
 @property (nonatomic, strong) QNRemoteAudioTrack *remoteAudioTrack;
+@property (nonatomic, strong) CustomAudioSource *audioSource;
 @property (nonatomic, copy) NSString *remoteUserID;
 
 @end
@@ -41,7 +40,7 @@
     // 清理配置
     [QNRTC deinit];
     
-    // 停止采集
+    // 停止音频源采集
     [self.audioSource stopCaptureSession];
 }
 
@@ -53,7 +52,8 @@
     self.localView.hidden = YES;
     self.remoteView.text = @"远端音频 Track";
     self.remoteView.hidden = YES;
-    self.tipsView.text = @"Tips：本示例仅展示一对一场景下自定义音频采集 Track 的发布和订阅功能";
+    self.tips = @"Tips：本示例仅展示一对一场景下自定义音频采集 Track 的发布和订阅功能，音频数据源采集使用 Audio Unit 。";
+    self.controlScrollView.hidden = YES;
 }
 
 /*!
@@ -136,8 +136,45 @@
             [self showAlertWithTitle:@"房间状态" message:@"已加入房间"];
             [self publish];
         } else if (state == QNConnectionStateIdle) {
-            // 空闲  此时应查看回调 info 的具体信息做进一步处理
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", info.error.localizedDescription]];
+            // 空闲状态  此时应查看回调 info 的具体信息做进一步处理
+            switch (info.reason) {
+                case QNConnectionDisconnectedReasonKickedOut: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：被踢出房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonLeave: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：主动离开房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomClosed: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间已关闭" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomFull: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间人数已满" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonError: {
+                    NSString *errorMessage = info.error.localizedDescription;
+                    if (info.error.code == QNRTCErrorReconnectTokenError) {
+                        errorMessage = @"重新进入房间超时";
+                    }
+                    [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", errorMessage] cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
         } else if (state == QNConnectionStateReconnecting) {
             // 重连中
             [self showAlertWithTitle:@"房间状态" message:@"重连中"];

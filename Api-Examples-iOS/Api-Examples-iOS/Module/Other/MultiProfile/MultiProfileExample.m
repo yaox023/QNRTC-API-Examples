@@ -10,13 +10,12 @@
 
 @interface MultiProfileExample () <QNRTCClientDelegate, QNRemoteTrackVideoDataDelegate>
 
-@property (nonatomic, strong) MultiProfileControlView *controlView;
-
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCameraVideoTrack *cameraVideoTrack;
 @property (nonatomic, strong) QNRemoteVideoTrack *remoteVideoTrack;
 @property (nonatomic, strong) QNGLKView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
+@property (nonatomic, strong) MultiProfileControlView *controlView;
 @property (nonatomic, copy) NSString *remoteUserID;
 
 @end
@@ -26,7 +25,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
     [self loadSubviews];
     [self initRTC];
 }
@@ -50,10 +48,10 @@
 - (void)loadSubviews {
     self.localView.text = @"本端视图";
     self.remoteView.text = @"远端视图";
-    self.tipsView.text = @"Tips：本示例仅展示一对一场景下相机 Track 的大小流发布和订阅，请注意：\n"
-    "1. 开启大小流功能设置编码宽高最低为 1280 x 720\n"
-    "2. 目前仅支持在发送端发布单路视频 Track 的场景下，使用大小流功能\n"
-    "3. 对于开启大小流的用户，建议保证有良好的网络环境，保证多流发送质量";
+    self.tips = @"Tips：本示例仅展示一对一场景下相机 Track 的大小流发布和订阅，请注意：\n"
+    "1. 开启大小流功能设置编码宽高最低为 1280 x 720。\n"
+    "2. 目前仅支持在发送端发布单路视频 Track 的场景下，使用大小流功能。\n"
+    "3. 对于开启大小流的用户，建议保证有良好的网络环境，保证多流发送质量。";
     
     // 添加大小流参数控制视图
     self.controlView = [[[NSBundle mainBundle] loadNibNamed:@"MultiProfileControlView" owner:nil options:nil] lastObject];
@@ -119,7 +117,7 @@
 }
 
 /*!
- * @abstract 发布相机视频 Track
+ * @abstract 发布
  */
 - (void)publish {
     __weak MultiProfileExample *weakSelf = self;
@@ -137,15 +135,23 @@
  * @abstract 切换订阅远端的大小流级别
  */
 -  (void)switchProfileButtonAction:(UIButton *)sender {
-    if (!self.remoteVideoTrack) return;
+    if (!self.remoteVideoTrack) {
+        [self showAlertWithTitle:@"提示" message:@"远端没有用户发布"];
+        return;
+    }
     
+    if (!self.remoteVideoTrack.isMultiProfileEnabled) {
+        [self showAlertWithTitle:@"提示" message:@"远端没有开启大小流"];
+        return;
+    }
+    
+    // setProfile 接口仅是设置预期的流等级，并不代表实际的订阅等级，若实际发送端还未发送指定等级的流，则将无法订阅到指定的 profile。
     RadioButton *selectedButton = self.controlView.lowButton.selectedButton;
-    NSString *selected = selectedButton.titleLabel.text;
-    if ([selected isEqualToString:@"Low"]) {
+    if (selectedButton == self.controlView.lowButton) {
         [self.remoteVideoTrack setProfile:QNTrackProfileLow];
-    } else if ([selected isEqualToString:@"Medium"]) {
+    } else if (selectedButton == self.controlView.mediumButton) {
         [self.remoteVideoTrack setProfile:QNTrackProfileMedium];
-    } else if ([selected isEqualToString:@"High"]) {
+    } else if (selectedButton == self.controlView.highButton) {
         [self.remoteVideoTrack setProfile:QNTrackProfileHigh];
     }
 }
@@ -154,14 +160,17 @@
  * @abstract 订阅的远端视频 Track 分辨率发生变化时的回调。
  */
 - (void)remoteVideoTrack:(QNRemoteVideoTrack *)remoteVideoTrack didSubscribeProfileChanged:(QNTrackProfile)profile {
-    NSString *currentProfile = @"";
-    switch (profile) {
-        case QNTrackProfileLow: currentProfile = @"Low"; break;
-        case QNTrackProfileMedium: currentProfile = @"Medium"; break;
-        case QNTrackProfileHigh: currentProfile = @"High"; break;
-        default: break;
-    }
-    [self showAlertWithTitle:@"大小流状态" message:[NSString stringWithFormat:@"当前订阅状态：%@", currentProfile]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *currentProfile = @"";
+        switch (profile) {
+            case QNTrackProfileLow: currentProfile = @"Low"; break;
+            case QNTrackProfileMedium: currentProfile = @"Medium"; break;
+            case QNTrackProfileHigh: currentProfile = @"High"; break;
+            default: break;
+        }
+        self.controlView.currentProfileTF.text = currentProfile;
+        [self showAlertWithTitle:@"订阅状态更新" message:[NSString stringWithFormat:@"当前订阅级别：%@", currentProfile]];
+    });
 }
 
 #pragma mark - QNRTCClientDelegate
@@ -175,8 +184,45 @@
             [self showAlertWithTitle:@"房间状态" message:@"已加入房间"];
             [self publish];
         } else if (state == QNConnectionStateIdle) {
-            // 空闲  此时应查看回调 info 的具体信息做进一步处理
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", info.error.localizedDescription]];
+            // 空闲状态  此时应查看回调 info 的具体信息做进一步处理
+            switch (info.reason) {
+                case QNConnectionDisconnectedReasonKickedOut: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：被踢出房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonLeave: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：主动离开房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomClosed: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间已关闭" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomFull: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间人数已满" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonError: {
+                    NSString *errorMessage = info.error.localizedDescription;
+                    if (info.error.code == QNRTCErrorReconnectTokenError) {
+                        errorMessage = @"重新进入房间超时";
+                    }
+                    [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", errorMessage] cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
         } else if (state == QNConnectionStateReconnecting) {
             // 重连中
             [self showAlertWithTitle:@"房间状态" message:@"重连中"];
@@ -225,9 +271,11 @@
     // 移除当前渲染的远端用户的视图
     if ([userID isEqualToString:self.remoteUserID]) {
         [videoTrack play:nil];
+        videoTrack.videoDelegate = nil;
         self.remoteVideoTrack =  nil;
         self.remoteRenderView.hidden = YES;
         [self.controlView.lowButton deselectAllButtons];
+        self.controlView.currentProfileTF.text = @"None";
     }
 }
 

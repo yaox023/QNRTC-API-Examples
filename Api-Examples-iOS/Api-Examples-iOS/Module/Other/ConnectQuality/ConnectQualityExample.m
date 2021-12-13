@@ -13,14 +13,13 @@ static NSString *video_profile[] = {@"Low", @"Medium", @"High"};
 
 @interface ConnectQualityExample () <QNRTCClientDelegate>
 
-@property (nonatomic, strong) ConnectQualityControlView *controlView;
-@property (nonatomic, strong) NSTimer *timer;
-
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCameraVideoTrack *cameraVideoTrack;
 @property (nonatomic, strong) QNMicrophoneAudioTrack *microphoneAudioTrack;
 @property (nonatomic, strong) QNGLKView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
+@property (nonatomic, strong) ConnectQualityControlView *controlView;
+@property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, copy) NSString *remoteUserID;
 
 @end
@@ -66,7 +65,8 @@ static NSString *video_profile[] = {@"Low", @"Medium", @"High"};
 - (void)loadSubviews {
     self.localView.text = @"本端视图";
     self.remoteView.text = @"远端视图";
-    self.tipsView.text = @"Tips：本示例仅展示一对一场景下发布订阅后获取本地和远端单路音视频 Track 状态统计的功能。质量统计参数详细介绍可参考：\nhttps://developer.qiniu.com/rtc/10085/quality-statistics-iOS";
+    self.tips = @"Tips：本示例仅展示一对一场景下发布订阅后获取本地和远端单路音视频 Track 状态统计的功能。\n"
+    "通话质量统计参数详细介绍可参考：\nhttps://developer.qiniu.com/rtc/10085/quality-statistics-iOS";
     
     // 添加状态统计视图
     self.controlView = [[[NSBundle mainBundle] loadNibNamed:@"ConnectQualityControlView" owner:nil options:nil] lastObject];
@@ -74,7 +74,7 @@ static NSString *video_profile[] = {@"Low", @"Medium", @"High"};
     [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.equalTo(self.controlScrollView);
         make.width.mas_equalTo(SCREEN_WIDTH);
-        make.height.mas_equalTo(660);
+        make.height.mas_equalTo(680);
     }];
     [self.controlView layoutIfNeeded];
     self.controlScrollView.contentSize = self.controlView.frame.size;
@@ -143,95 +143,98 @@ static NSString *video_profile[] = {@"Low", @"Medium", @"High"};
  * @abstract 展示本地和远端网络质量、单路音视频 Track 的统计信息
  */
 - (void)getTrackStatsAndShow {
-    // 本端用户质量统计
     if (self.client.roomState == QNConnectionStateConnected || self.client.roomState == QNConnectionStateReconnected) {
-        // 网络质量
-        QNNetworkQuality *localNetworkQuality = [self.client getUserNetworkQuality:self.userID];
-        if (localNetworkQuality) {
-            self.controlView.localUplinkNetworkGradeL.text = network_grade[localNetworkQuality.uplinkNetworkGrade];
-            self.controlView.localDownlinkNetworkGradeL.text = network_grade[localNetworkQuality.downlinkNetworkGrade];
-        }
-        
-        // 音频 Track 质量
-        NSDictionary *localAudioTrackStats = [self.client getLocalAudioTrackStats];
-        if (localAudioTrackStats && localAudioTrackStats.count > 0) {
-            for (NSString *trackID in localAudioTrackStats.allKeys) {
-                if ([self.microphoneAudioTrack.trackID isEqualToString:trackID]) {
-                    QNLocalAudioTrackStats *microphoneAudioTrackStat = localAudioTrackStats[trackID];
-                    self.controlView.localAudioUplinkBitrateL.text = [NSString stringWithFormat:@"%d kbps", (int)microphoneAudioTrackStat.uplinkBitrate / 1000];
-                    self.controlView.localAudioUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", microphoneAudioTrackStat.uplinkRTT];
-                    self.controlView.localAudioUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", microphoneAudioTrackStat.uplinkLostRate];
-                }
-            }
-        }
-        
-        // 视频 Track 质量
-        NSDictionary *localVideoTrackStats = [self.client getLocalVideoTrackStats];
-        if (localVideoTrackStats && localVideoTrackStats.count > 0) {
-            for (NSString *trackID in localVideoTrackStats.allKeys) {
-                if ([self.cameraVideoTrack.trackID isEqualToString:trackID]) {
-                    QNLocalVideoTrackStats *cameraVideoTrackStat = localVideoTrackStats[trackID];
-                    self.controlView.localVideoProfileL.text = video_profile[cameraVideoTrackStat.profile];
-                    self.controlView.localVideoUplinkFpsL.text = [NSString stringWithFormat:@"%lu fps", cameraVideoTrackStat.uplinkFrameRate];
-                    self.controlView.localVideoUplinkBitrateL.text = [NSString stringWithFormat:@"%d kbps", (int)cameraVideoTrackStat.uplinkBitrate / 1000];
-                    self.controlView.localVideoUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", cameraVideoTrackStat.uplinkRTT];
-                    self.controlView.localVideoUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", cameraVideoTrackStat.uplinkLostRate];
-                }
-            }
-        }
-    } else {
-        [self.controlView resetLocal];
-    }
-            
-    // 远端用户质量统计
-    if (self.remoteUserID) {
-        // 获取远端用户对象
-        QNRemoteUser *remoteUser = [self.client getRemoteUser:self.remoteUserID];
-        if (remoteUser) {
-            // 取该用户音视频 Track 数组的首个 Track 做统计展示
-            QNRemoteAudioTrack *remoteAudioTrack = remoteUser.audioTrack.firstObject;
-            QNRemoteVideoTrack *remoteVideoTrack = remoteUser.videoTrack.firstObject;
-            
+        // 本端用户质量统计
+        {
             // 网络质量
-            QNNetworkQuality *remoteNetworkQuality = [self.client getUserNetworkQuality:self.remoteUserID];
-            if (remoteNetworkQuality) {
-                self.controlView.remoteUplinkNetworkGradeL.text = network_grade[remoteNetworkQuality.uplinkNetworkGrade];
-                self.controlView.remoteDownlinkNetworkGradeL.text = network_grade[remoteNetworkQuality.downlinkNetworkGrade];
+            QNNetworkQuality *localNetworkQuality = [self.client getUserNetworkQuality:self.userID];
+            if (localNetworkQuality) {
+                self.controlView.localUplinkNetworkGradeL.text = network_grade[localNetworkQuality.uplinkNetworkGrade];
+                self.controlView.localDownlinkNetworkGradeL.text = network_grade[localNetworkQuality.downlinkNetworkGrade];
             }
             
             // 音频 Track 质量
-            NSDictionary *remoteAudioTrackStats = [self.client getRemoteAudioTrackStats];
-            if (remoteAudioTrackStats && remoteAudioTrackStats.count > 0) {
-                for (NSString *trackID in remoteAudioTrackStats.allKeys) {
-                    if ([remoteAudioTrack.trackID isEqualToString:trackID]) {
-                        QNRemoteAudioTrackStats *remoteAudioTrackStat = remoteAudioTrackStats[trackID];
-                        self.controlView.remoteAudioDownlinkBitrateL.text = [NSString stringWithFormat:@"%d kbps", (int)remoteAudioTrackStat.downlinkBitrate / 1000];
-                        self.controlView.remoteAudioDownloadLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteAudioTrackStat.downlinkLostRate];
-                        self.controlView.remoteAudioUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", remoteAudioTrackStat.uplinkRTT];
-                        self.controlView.remoteAudioUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteAudioTrackStat.uplinkLostRate];
+            NSDictionary *localAudioTrackStats = [self.client getLocalAudioTrackStats];
+            if (localAudioTrackStats && localAudioTrackStats.count > 0) {
+                for (NSString *trackID in localAudioTrackStats.allKeys) {
+                    if ([self.microphoneAudioTrack.trackID isEqualToString:trackID]) {
+                        QNLocalAudioTrackStats *microphoneAudioTrackStat = localAudioTrackStats[trackID];
+                        self.controlView.localAudioUplinkBitrateL.text = [NSString stringWithFormat:@"%d kbps", (int)microphoneAudioTrackStat.uplinkBitrate / 1000];
+                        self.controlView.localAudioUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", microphoneAudioTrackStat.uplinkRTT];
+                        self.controlView.localAudioUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", microphoneAudioTrackStat.uplinkLostRate];
                     }
                 }
             }
             
             // 视频 Track 质量
-            NSDictionary *remoteVideoTrackStats = [self.client getRemoteVideoTrackStats];
-            if (remoteVideoTrackStats && remoteVideoTrackStats.count > 0) {
-                for (NSString *trackID in remoteVideoTrackStats.allKeys) {
-                    if ([remoteVideoTrack.trackID isEqualToString:trackID]) {
-                        QNRemoteVideoTrackStats *remoteVideoTrackStat = remoteVideoTrackStats[trackID];
-                        self.controlView.remoteVideoProfileL.text = video_profile[remoteVideoTrackStat.profile];
-                        self.controlView.remoteVideoDownloadFpsL.text = [NSString stringWithFormat:@"%lu fps", remoteVideoTrackStat.downlinkFrameRate];
-                        self.controlView.remoteVideoDownloadBitrateL.text = [NSString stringWithFormat:@"%.1f kbps", remoteVideoTrackStat.downlinkBitrate / 1000];
-                        self.controlView.remoteVideoDownloadLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteVideoTrackStat.downlinkLostRate];
-                        self.controlView.remoteVideoUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", remoteVideoTrackStat.uplinkRTT];
-                        self.controlView.remoteVideoUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteVideoTrackStat.uplinkLostRate];
+            NSDictionary *localVideoTrackStats = [self.client getLocalVideoTrackStats];
+            if (localVideoTrackStats && localVideoTrackStats.count > 0) {
+                for (NSString *trackID in localVideoTrackStats.allKeys) {
+                    if ([self.cameraVideoTrack.trackID isEqualToString:trackID]) {
+                        QNLocalVideoTrackStats *cameraVideoTrackStat = localVideoTrackStats[trackID];
+                        self.controlView.localVideoProfileL.text = video_profile[cameraVideoTrackStat.profile];
+                        self.controlView.localVideoUplinkFpsL.text = [NSString stringWithFormat:@"%lu fps", cameraVideoTrackStat.uplinkFrameRate];
+                        self.controlView.localVideoUplinkBitrateL.text = [NSString stringWithFormat:@"%d kbps", (int)cameraVideoTrackStat.uplinkBitrate / 1000];
+                        self.controlView.localVideoUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", cameraVideoTrackStat.uplinkRTT];
+                        self.controlView.localVideoUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", cameraVideoTrackStat.uplinkLostRate];
                     }
                 }
+            }
+        }
+        
+        // 远端用户质量统计
+        if (self.remoteUserID) {
+            // 获取远端用户对象
+            QNRemoteUser *remoteUser = [self.client getRemoteUser:self.remoteUserID];
+            if (remoteUser) {
+                // 取该用户音视频 Track 数组的首个 Track 做统计展示
+                QNRemoteAudioTrack *remoteAudioTrack = remoteUser.audioTrack.firstObject;
+                QNRemoteVideoTrack *remoteVideoTrack = remoteUser.videoTrack.firstObject;
+                
+                // 网络质量
+                QNNetworkQuality *remoteNetworkQuality = [self.client getUserNetworkQuality:self.remoteUserID];
+                if (remoteNetworkQuality) {
+                    self.controlView.remoteUplinkNetworkGradeL.text = network_grade[remoteNetworkQuality.uplinkNetworkGrade];
+                    self.controlView.remoteDownlinkNetworkGradeL.text = network_grade[remoteNetworkQuality.downlinkNetworkGrade];
+                }
+                
+                // 音频 Track 质量
+                NSDictionary *remoteAudioTrackStats = [self.client getRemoteAudioTrackStats];
+                if (remoteAudioTrackStats && remoteAudioTrackStats.count > 0) {
+                    for (NSString *trackID in remoteAudioTrackStats.allKeys) {
+                        if ([remoteAudioTrack.trackID isEqualToString:trackID]) {
+                            QNRemoteAudioTrackStats *remoteAudioTrackStat = remoteAudioTrackStats[trackID];
+                            self.controlView.remoteAudioDownlinkBitrateL.text = [NSString stringWithFormat:@"%d kbps", (int)remoteAudioTrackStat.downlinkBitrate / 1000];
+                            self.controlView.remoteAudioDownloadLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteAudioTrackStat.downlinkLostRate];
+                            self.controlView.remoteAudioUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", remoteAudioTrackStat.uplinkRTT];
+                            self.controlView.remoteAudioUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteAudioTrackStat.uplinkLostRate];
+                        }
+                    }
+                }
+                
+                // 视频 Track 质量
+                NSDictionary *remoteVideoTrackStats = [self.client getRemoteVideoTrackStats];
+                if (remoteVideoTrackStats && remoteVideoTrackStats.count > 0) {
+                    for (NSString *trackID in remoteVideoTrackStats.allKeys) {
+                        if ([remoteVideoTrack.trackID isEqualToString:trackID]) {
+                            QNRemoteVideoTrackStats *remoteVideoTrackStat = remoteVideoTrackStats[trackID];
+                            self.controlView.remoteVideoProfileL.text = video_profile[remoteVideoTrackStat.profile];
+                            self.controlView.remoteVideoDownloadFpsL.text = [NSString stringWithFormat:@"%lu fps", remoteVideoTrackStat.downlinkFrameRate];
+                            self.controlView.remoteVideoDownloadBitrateL.text = [NSString stringWithFormat:@"%.1f kbps", remoteVideoTrackStat.downlinkBitrate / 1000];
+                            self.controlView.remoteVideoDownloadLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteVideoTrackStat.downlinkLostRate];
+                            self.controlView.remoteVideoUplinkRttL.text = [NSString stringWithFormat:@"%lu ms", remoteVideoTrackStat.uplinkRTT];
+                            self.controlView.remoteVideoUplinkLostRateL.text = [NSString stringWithFormat:@"%.1f %%", remoteVideoTrackStat.uplinkLostRate];
+                        }
+                    }
+                }
+            } else {
+                [self.controlView resetRemote];
             }
         } else {
             [self.controlView resetRemote];
         }
     } else {
+        [self.controlView resetLocal];
         [self.controlView resetRemote];
     }
 }
@@ -247,8 +250,45 @@ static NSString *video_profile[] = {@"Low", @"Medium", @"High"};
             [self showAlertWithTitle:@"房间状态" message:@"已加入房间"];
             [self publish];
         } else if (state == QNConnectionStateIdle) {
-            // 空闲  此时应查看回调 info 的具体信息做进一步处理
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", info.error.localizedDescription]];
+            // 空闲状态  此时应查看回调 info 的具体信息做进一步处理
+            switch (info.reason) {
+                case QNConnectionDisconnectedReasonKickedOut: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：被踢出房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonLeave: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：主动离开房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomClosed: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间已关闭" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomFull: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间人数已满" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonError: {
+                    NSString *errorMessage = info.error.localizedDescription;
+                    if (info.error.code == QNRTCErrorReconnectTokenError) {
+                        errorMessage = @"重新进入房间超时";
+                    }
+                    [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", errorMessage] cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
         } else if (state == QNConnectionStateReconnecting) {
             // 重连中
             [self showAlertWithTitle:@"房间状态" message:@"重连中"];

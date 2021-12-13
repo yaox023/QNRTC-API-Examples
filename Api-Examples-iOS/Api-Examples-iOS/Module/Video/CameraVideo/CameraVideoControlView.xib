@@ -56,22 +56,13 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Qk2-l5-qzy">
-                    <rect key="frame" x="148" y="119" width="124" height="31"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="120" id="QkJ-TX-vQL"/>
-                    </constraints>
+                    <rect key="frame" x="148" y="119" width="194" height="31"/>
                 </slider>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="wWw-ob-rj7">
-                    <rect key="frame" x="148" y="169" width="124" height="31"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="120" id="bui-Hs-cDV"/>
-                    </constraints>
+                    <rect key="frame" x="148" y="169" width="194" height="31"/>
                 </slider>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="afL-Ki-8G3">
-                    <rect key="frame" x="148" y="219" width="124" height="31"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="120" id="RaO-eD-lcV"/>
-                    </constraints>
+                    <rect key="frame" x="148" y="219" width="194" height="31"/>
                 </slider>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y9b-FY-zep">
                     <rect key="frame" x="150" y="68.5" width="51" height="31"/>
@@ -79,8 +70,9 @@
                 </switch>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="afL-Ki-8G3" secondAttribute="trailing" constant="30" id="4pi-PX-gFC"/>
                 <constraint firstItem="6ov-MN-NqC" firstAttribute="top" secondItem="ifP-4L-agf" secondAttribute="bottom" constant="30" id="5Ul-QE-c9v"/>
                 <constraint firstItem="Y9b-FY-zep" firstAttribute="centerY" secondItem="sdr-uF-Aok" secondAttribute="centerY" id="5oT-Uc-tne"/>
                 <constraint firstItem="afL-Ki-8G3" firstAttribute="leading" secondItem="6ov-MN-NqC" secondAttribute="trailing" constant="60" id="Igd-7r-6gk"/>
@@ -89,7 +81,9 @@
                 <constraint firstItem="Qk2-l5-qzy" firstAttribute="centerY" secondItem="ATr-9w-6jI" secondAttribute="centerY" id="OFQ-ju-7ay"/>
                 <constraint firstItem="ATr-9w-6jI" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="Qn8-ya-aXg"/>
                 <constraint firstItem="wWw-ob-rj7" firstAttribute="leading" secondItem="ifP-4L-agf" secondAttribute="trailing" constant="60" id="RIm-15-bdd"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="wWw-ob-rj7" secondAttribute="trailing" constant="30" id="SYf-KK-nme"/>
                 <constraint firstItem="Qk2-l5-qzy" firstAttribute="leading" secondItem="ATr-9w-6jI" secondAttribute="trailing" constant="60" id="UA3-CX-yf5"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Qk2-l5-qzy" secondAttribute="trailing" constant="30" id="UCt-73-TIS"/>
                 <constraint firstItem="ifP-4L-agf" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="VHz-W1-6Bh"/>
                 <constraint firstItem="wWw-ob-rj7" firstAttribute="centerY" secondItem="ifP-4L-agf" secondAttribute="centerY" id="bnQ-O1-o8p"/>
                 <constraint firstItem="afL-Ki-8G3" firstAttribute="centerY" secondItem="6ov-MN-NqC" secondAttribute="centerY" id="drI-UX-J4q"/>
@@ -109,9 +103,6 @@
         </view>
     </objects>
     <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemBlueColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

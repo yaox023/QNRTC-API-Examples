@@ -51,7 +51,7 @@ static NSString *TABLE_VIEW_CELL_IDENTIFIER = @"TABLE_VIEW_CELL_IDENTIFIER";
     self.moduleList = @[
         @"视频连麦相关",
         @"音频连麦相关",
-        @"房间相关",
+//        @"房间相关",
         @"CDN 转推相关",
         @"其他功能"
     ];
@@ -81,16 +81,16 @@ static NSString *TABLE_VIEW_CELL_IDENTIFIER = @"TABLE_VIEW_CELL_IDENTIFIER";
                 @"class": @"CustomAudioExample"
             }
         ],
-        @[
-            @{
-                @"desc": @"快速切换房间",
-                @"class": @"SwitchRoomExample"
-            },
-            @{
-                @"desc": @"加入多个房间",
-                @"class": @"MultiRoomsExample"
-            }
-        ],
+//        @[
+//            @{
+//                @"desc": @"快速切换房间",
+//                @"class": @"SwitchRoomExample"
+//            },
+//            @{
+//                @"desc": @"加入多个房间",
+//                @"class": @"MultiRoomsExample"
+//            }
+//        ],
         @[
             @{
                 @"desc": @"CDN 单人转推",

@@ -10,7 +10,6 @@
 
 @interface TranscodingLiveCustomExample () <QNRTCClientDelegate>
 
-@property (nonatomic, strong) TranscodingLiveCustomControlView *controlView;
 
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCameraVideoTrack *cameraVideoTrack;
@@ -18,6 +17,7 @@
 @property (nonatomic, strong) QNGLKView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
 @property (nonatomic, strong) QNTranscodingLiveStreamingConfig *transcodingLiveStreamingConfig;
+@property (nonatomic, strong) TranscodingLiveCustomControlView *controlView;
 @property (nonatomic, copy) NSString *remoteUserID;
 @property (nonatomic, copy) NSString *streamID;
 @property (nonatomic, assign) BOOL isStreaming;
@@ -29,7 +29,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor whiteColor];
     self.isStreaming = NO;
     self.streamID = [NSString stringWithFormat:@"%@-%@", self.roomName, self.userID];
     [self loadSubviews];
@@ -55,10 +54,10 @@
 - (void)loadSubviews {
     self.localView.text = @"本端视图";
     self.remoteView.text = @"远端视图";
-    self.tipsView.text = @"Tips：\n"
-    "1.本示例仅展示一对一场景下使用自定义合流配置创建合流转推的功能。\n"
-    "2.使用转推功能需要在七牛后台开启对应 AppId 的转推功能开关。\n"
-    "3.开启转推后即可用转推地址对应的拉流地址观看合流效果。";
+    self.tips = @"Tips：\n"
+    "1. 本示例仅展示一对一场景下使用自定义合流配置创建合流任务的功能。\n"
+    "2. 使用转推功能需要在七牛后台开启对应 AppId 的转推功能开关。\n"
+    "3. 开启转推后即可用转推地址对应的拉流地址观看合流效果。";
     
     // 添加转推控制视图
     self.controlView = [[[NSBundle mainBundle] loadNibNamed:@"TranscodingLiveCustomControlView" owner:nil options:nil] lastObject];
@@ -155,15 +154,15 @@
         return;
     }
     
-    // 校验转推地址
-    if ([self.controlView.publishUrlTF.text isEqualToString:@""]) {
-        [self showAlertWithTitle:@"参数错误" message:@"请输入转推地址"];
-        return;
-    }
-    
     // 校验房间状态
     if (!(self.client.roomState == QNConnectionStateConnected || self.client.roomState == QNConnectionStateReconnected)) {
         [self showAlertWithTitle:@"状态提示" message:@"请先加入房间"];
+        return;
+    }
+    
+    // 校验转推地址
+    if ([self.controlView.publishUrlTF.text isEqualToString:@""]) {
+        [self showAlertWithTitle:@"参数错误" message:@"请输入转推地址"];
         return;
     }
     
@@ -225,6 +224,12 @@
  * @abstract 点击停止自定义合流转推
  */
 - (void)stopStreamingButtonAction {
+    // 校验是否在转推中
+    if (!self.isStreaming) {
+        [self showAlertWithTitle:@"状态提示" message:@"请先开始转推任务"];
+        return;
+    }
+    
     // 校验房间状态
     if (!(self.client.roomState == QNConnectionStateConnected || self.client.roomState == QNConnectionStateReconnected)) {
         [self showAlertWithTitle:@"状态提示" message:@"请先加入房间"];
@@ -253,7 +258,7 @@
     } else {
         if (self.remoteUserID) {
             QNRemoteUser *remoteUser = [self.client getRemoteUser:self.remoteUserID];
-            // 这里去远端用户音视频数组里的第一个 Track 用于合流
+            // 这里取远端用户音视频数组里的第一个 Track 用于合流
             videoStreamingTrackID = remoteUser.videoTrack.firstObject.trackID;
             audioStreamingTrackID = remoteUser.audioTrack.firstObject.trackID;
         } else {
@@ -368,8 +373,45 @@
             [self showAlertWithTitle:@"房间状态" message:@"已加入房间"];
             [self publish];
         } else if (state == QNConnectionStateIdle) {
-            // 空闲  此时应查看回调 info 的具体信息做进一步处理
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", info.error.localizedDescription]];
+            // 空闲状态  此时应查看回调 info 的具体信息做进一步处理
+            switch (info.reason) {
+                case QNConnectionDisconnectedReasonKickedOut: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：被踢出房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonLeave: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：主动离开房间" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomClosed: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间已关闭" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonRoomFull: {
+                    [self showAlertWithTitle:@"房间状态" message:@"已离开房间：房间人数已满" cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                case QNConnectionDisconnectedReasonError: {
+                    NSString *errorMessage = info.error.localizedDescription;
+                    if (info.error.code == QNRTCErrorReconnectTokenError) {
+                        errorMessage = @"重新进入房间超时";
+                    }
+                    [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"已离开房间：%@", errorMessage] cancelAction:^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
         } else if (state == QNConnectionStateReconnecting) {
             // 重连中
             [self showAlertWithTitle:@"房间状态" message:@"重连中"];

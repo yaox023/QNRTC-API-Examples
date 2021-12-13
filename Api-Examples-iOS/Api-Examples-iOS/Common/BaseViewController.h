@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UILabel *remoteView;
 @property (nonatomic, strong) UIScrollView *controlScrollView;
 @property (nonatomic, strong) UILabel *tipsView;
+@property (nonatomic, copy) NSString *tips;
 
 @property (nonatomic, copy) NSString *roomName;
 @property (nonatomic, copy) NSString *userID;
