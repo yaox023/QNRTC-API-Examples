@@ -57,7 +57,7 @@
     [self.controlView.remoteVolumeSlider addTarget:self action:@selector(remoteVolumeSliderAction:) forControlEvents:UIControlEventValueChanged];
     [self.controlScrollView addSubview:self.controlView];
     [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.top.equalTo(self.controlView);
+        make.left.top.equalTo(self.controlScrollView);
         make.width.mas_equalTo(SCREEN_WIDTH);
         make.height.mas_equalTo(200);
     }];
@@ -101,13 +101,14 @@
  * @abstract 发布 Track
  */
 - (void)publish {
+    __weak MicrophoneAudioExample *weakSelf = self;
     [self.client publish:@[self.microphoneAudioTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (onPublished) {
-                [self showAlertWithTitle:@"房间状态" message:@"发布成功"];
-                self.localView.hidden = NO;
+                [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];
+                weakSelf.localView.hidden = NO;
             } else {
-                [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
+                [weakSelf showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
             }
         });
     }];

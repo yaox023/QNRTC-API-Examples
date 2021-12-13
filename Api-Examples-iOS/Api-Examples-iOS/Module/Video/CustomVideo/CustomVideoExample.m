@@ -117,15 +117,16 @@
  * @abstract 发布相机视频 Track
  */
 - (void)publish {
+    __weak CustomVideoExample *weakSelf = self;
     [self.client publish:@[self.customVideoTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (onPublished) {
-                [self showAlertWithTitle:@"房间状态" message:@"发布成功"];
+                [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];
                 // 开启本地预览
-                [self.customVideoTrack play:self.localRenderView];
-                self.localRenderView.hidden = NO;
+                [weakSelf.customVideoTrack play:self.localRenderView];
+                weakSelf.localRenderView.hidden = NO;
             } else {
-                [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
+                [weakSelf showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
             }
         });
     }];

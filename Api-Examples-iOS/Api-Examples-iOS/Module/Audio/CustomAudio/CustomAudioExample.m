@@ -98,13 +98,14 @@
  * @abstract 发布 Track
  */
 - (void)publish {
+    __weak CustomAudioExample *weakSelf = self;
     [self.client publish:@[self.customAudioTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (onPublished) {
-                [self showAlertWithTitle:@"房间状态" message:@"发布成功"];
-                self.localView.hidden = NO;
+                [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];
+                weakSelf.localView.hidden = NO;
             } else {
-                [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
+                [weakSelf showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
             }
         });
     }];

@@ -6,6 +6,20 @@
 //
 
 #import "ViewController.h"
+#import "CameraVideoExample.h"
+#import "CustomVideoExample.h"
+#import "ScreenRecordExample.h"
+#import "MicrophoneAudioExample.h"
+#import "CustomAudioExample.h"
+#import "SwitchRoomExample.h"
+#import "MultiRoomsExample.h"
+#import "DirectLiveExample.h"
+#import "TranscodingLiveDefaultExample.h"
+#import "TranscodingLiveCustomExample.h"
+#import "AudioMixExample.h"
+#import "SendMessageExample.h"
+#import "MultiProfileExample.h"
+#import "ConnectQualityExample.h"
 
 static NSString *TABLE_VIEW_CELL_IDENTIFIER = @"TABLE_VIEW_CELL_IDENTIFIER";
 

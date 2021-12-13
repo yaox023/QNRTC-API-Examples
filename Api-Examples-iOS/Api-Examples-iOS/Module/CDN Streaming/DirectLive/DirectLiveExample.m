@@ -62,7 +62,7 @@
     [self.controlView.stopButton addTarget:self action:@selector(stopLiveStreaming) forControlEvents:UIControlEventTouchUpInside];
     [self.controlScrollView addSubview:self.controlView];
     [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.top.equalTo(self.controlView);
+        make.left.top.equalTo(self.controlScrollView);
         make.width.mas_equalTo(SCREEN_WIDTH);
         make.height.mas_equalTo(300);
     }];
@@ -127,11 +127,12 @@
  * @abstract 发布
  */
 - (void)publish {
+    __weak DirectLiveExample *weakSelf = self;
     [self.client publish:@[self.cameraVideoTrack, self.microphoneAudioTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         if (onPublished) {
-            [self showAlertWithTitle:@"房间状态" message:@"发布成功"];
+            [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];
         } else {
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
+            [weakSelf showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
         }
     }];
 }

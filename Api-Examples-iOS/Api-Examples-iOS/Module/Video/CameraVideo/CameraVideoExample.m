@@ -51,7 +51,7 @@
     self.remoteView.text = @"远端视图";
     self.tipsView.text = @"Tips：本示例仅展示一对一场景下 SDK 内置摄像头采集视频 Track 的发布和订阅，以及基于摄像头视频 Track 的美颜功能。";
     
-    // 添加美颜参数控制视图
+// 添加美颜参数控制视图
     self.controlView = [[[NSBundle mainBundle] loadNibNamed:@"CameraVideoControlView" owner:nil options:nil] lastObject];
     [self.controlView.beautySwitch addTarget:self action:@selector(beautySwitchAction:) forControlEvents:UIControlEventValueChanged];
     [self.controlView.beautyStrengthSlider addTarget:self action:@selector(beautyStrengthSliderAction:) forControlEvents:UIControlEventValueChanged];
@@ -59,13 +59,13 @@
     [self.controlView.beautyWhitenSlider addTarget:self action:@selector(beautyWhitenSliderAction:) forControlEvents:UIControlEventValueChanged];
     [self.controlScrollView addSubview:self.controlView];
     [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.top.equalTo(self.controlView);
+        make.left.top.right.equalTo(self.controlScrollView);
         make.width.mas_equalTo(SCREEN_WIDTH);
         make.height.mas_equalTo(200);
     }];
     [self.controlView layoutIfNeeded];
     self.controlScrollView.contentSize = self.controlView.frame.size;
-    
+
     // 初始化本地预览视图
     self.localRenderView = [[QNGLKView alloc] init];
     [self.localView addSubview:self.localRenderView];
@@ -136,11 +136,12 @@
  * @abstract 发布相机视频 Track
  */
 - (void)publish {
+    __weak CameraVideoExample *weakSelf = self;
     [self.client publish:@[self.cameraVideoTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         if (onPublished) {
-            [self showAlertWithTitle:@"房间状态" message:@"发布成功"];
+            [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];
         } else {
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
+            [weakSelf showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
         }
     }];
 }

@@ -135,11 +135,12 @@
  * @abstract 发布相机视频 Track
  */
 - (void)publish {
+    __weak ScreenRecordExample *weakSelf = self;
     [self.client publish:@[self.screenVideoTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         if (onPublished) {
-            [self showAlertWithTitle:@"房间状态" message:@"发布成功"];
+            [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];
         } else {
-            [self showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
+            [weakSelf showAlertWithTitle:@"房间状态" message:[NSString stringWithFormat:@"发布失败: %@", error.localizedDescription]];
         }
     }];
 }

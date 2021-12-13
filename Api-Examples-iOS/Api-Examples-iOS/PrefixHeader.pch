@@ -11,23 +11,6 @@
 // Include any system framework and library headers here that should be included in all compilation units.
 // You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
 
-#import "CameraVideoExample.h"
-#import "CustomVideoExample.h"
-#import "ScreenRecordExample.h"
-#import "MicrophoneAudioExample.h"
-#import "CustomAudioExample.h"
-#import "SwitchRoomExample.h"
-#import "MultiRoomsExample.h"
-#import "DirectLiveExample.h"
-#import "TranscodingLiveDefaultExample.h"
-#import "TranscodingLiveCustomExample.h"
-#import "AudioMixExample.h"
-#import "SendMessageExample.h"
-#import "MultiProfileExample.h"
-#import "ConnectQualityExample.h"
-
-#import "BaseViewController.h"
-
 #import <Masonry/Masonry.h>
 #import <QNRTCKit/QNRTCKit.h>
 
