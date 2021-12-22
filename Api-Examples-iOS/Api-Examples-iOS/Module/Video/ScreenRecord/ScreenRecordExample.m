@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNScreenVideoTrack *screenVideoTrack;
+@property (nonatomic, strong) QNMicrophoneAudioTrack *microphoneAudioTrack;
 @property (nonatomic, strong) QNGLKView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
 @property (nonatomic, strong) ScreenRecordAnimationView *animationView;
@@ -59,7 +60,7 @@
 - (void)loadSubviews {
     self.localView.text = @"录屏本端无预览";
     self.remoteView.text = @"远端视图";
-    self.tips = @"Tips：本示例仅展示一对一场景下 SDK 内置录屏采集视频 Track 的发布和订阅功能。";
+    self.tips = @"Tips：本示例仅展示一对一场景下 SDK 内置录屏采集视频 Track 和麦克风采集音频 Track 的发布和订阅功能。";
     
     // 初始化本地预览视图
     self.localRenderView = [[QNGLKView alloc] init];
@@ -125,6 +126,9 @@
     // 设置代理
     self.screenVideoTrack.screenDelegate = self;
     self.localRenderView.hidden = NO;
+    
+    // 创建麦克风音频 Track
+    self.microphoneAudioTrack = [QNRTC createMicrophoneAudioTrack];
 
     // 加入房间
     [self.client join:ROOM_TOKEN];
@@ -135,7 +139,7 @@
  */
 - (void)publish {
     __weak ScreenRecordExample *weakSelf = self;
-    [self.client publish:@[self.screenVideoTrack] completeCallback:^(BOOL onPublished, NSError *error) {
+    [self.client publish:@[self.screenVideoTrack, self.microphoneAudioTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         if (onPublished) {
             [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];
         } else {

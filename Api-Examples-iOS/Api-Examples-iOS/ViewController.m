@@ -49,8 +49,8 @@ static NSString *TABLE_VIEW_CELL_IDENTIFIER = @"TABLE_VIEW_CELL_IDENTIFIER";
 - (void)setupDataSource {
     
     self.moduleList = @[
-        @"视频连麦相关",
-        @"音频连麦相关",
+        @"视频通话相关",
+        @"纯音频通话相关",
 //        @"房间相关",
         @"CDN 转推相关",
         @"其他功能"
@@ -59,25 +59,25 @@ static NSString *TABLE_VIEW_CELL_IDENTIFIER = @"TABLE_VIEW_CELL_IDENTIFIER";
     self.exampleList = @[
         @[
             @{
-                @"desc": @"摄像头视频采集连麦",
+                @"desc": @"摄像头采集音视频通话",
                 @"class": @"CameraVideoExample"
             },
             @{
-                @"desc": @"自定义视频采集连麦",
+                @"desc": @"自定义采集音视频通话",
                 @"class": @"CustomVideoExample"
             },
             @{
-                @"desc": @"屏幕录制采集连麦",
+                @"desc": @"屏幕录制采集音视频通话",
                 @"class": @"ScreenRecordExample"
             }
         ],
         @[
             @{
-                @"desc": @"麦克风音频采集连麦",
+                @"desc": @"麦克风采集纯音频通话",
                 @"class": @"MicrophoneAudioExample"
             },
             @{
-                @"desc": @"自定义音频采集连麦",
+                @"desc": @"自定义采集纯音频通话",
                 @"class": @"CustomAudioExample"
             }
         ],

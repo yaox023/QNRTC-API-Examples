@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) QNRTCClient *client;
 @property (nonatomic, strong) QNCustomVideoTrack *customVideoTrack;
+@property (nonatomic, strong) QNMicrophoneAudioTrack *microphoneAudioTrack;
 @property (nonatomic, strong) QNVideoView *localRenderView;
 @property (nonatomic, strong) QNVideoView *remoteRenderView;
 @property (nonatomic, strong) CustomVideoSource *videoSource;
@@ -51,7 +52,7 @@
 - (void)loadSubviews {
     self.localView.text = @"本端视图";
     self.remoteView.text = @"远端视图";
-    self.tips = @"Tips：本示例仅展示一对一场景下自定义视频 Track 的发布和订阅功能，视频数据源采集使用 AVCaptureSession 。";
+    self.tips = @"Tips：本示例仅展示一对一场景下自定义视频 Track 和 SDK 内置麦克风音频 Track 的发布和订阅功能，视频数据源采集使用 AVCaptureSession 。";
     self.controlScrollView.hidden = YES;
     
     // 初始化本地预览视图
@@ -107,6 +108,9 @@
         // 也可以使用默认配置
         self.customVideoTrack = [QNRTC createCustomVideoTrack];
     }
+    
+    // 创建麦克风音频 Track
+    self.microphoneAudioTrack = [QNRTC createMicrophoneAudioTrack];
 
     // 加入房间
     [self.client join:ROOM_TOKEN];
@@ -117,7 +121,7 @@
  */
 - (void)publish {
     __weak CustomVideoExample *weakSelf = self;
-    [self.client publish:@[self.customVideoTrack] completeCallback:^(BOOL onPublished, NSError *error) {
+    [self.client publish:@[self.customVideoTrack, self.microphoneAudioTrack] completeCallback:^(BOOL onPublished, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (onPublished) {
                 [weakSelf showAlertWithTitle:@"房间状态" message:@"发布成功"];

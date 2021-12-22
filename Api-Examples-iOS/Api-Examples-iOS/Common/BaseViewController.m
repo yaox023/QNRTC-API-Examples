@@ -51,18 +51,17 @@
 
 - (void)parseToken {
     BOOL isValid = NO;
-    if (![ROOM_TOKEN isEqualToString:@""]) {
-        NSArray *tokenParts = [ROOM_TOKEN componentsSeparatedByString:@":"];
-        NSString *roomInfoBase64 = [tokenParts lastObject];
-        NSData *roomInfoBase64Data = [[NSData alloc] initWithBase64EncodedString:roomInfoBase64 options:0];
-        
-        NSError *error;
-        NSDictionary *roomInfoDic = [NSJSONSerialization JSONObjectWithData:roomInfoBase64Data options:NSJSONReadingAllowFragments error:&error];
-        if (!error) {
-            if (roomInfoDic[@"appId"] && roomInfoDic[@"roomName"] && roomInfoDic[@"userId"] && roomInfoDic[@"expireAt"]) {
-                isValid =  YES;
-                self.roomName = roomInfoDic[@"roomName"];
-                self.userID = roomInfoDic[@"userId"];
+    NSRange range = [ROOM_TOKEN rangeOfString:@":" options:NSBackwardsSearch];
+    if (range.location != NSNotFound) {
+        NSString *encodedRoomAccess = [ROOM_TOKEN substringFromIndex:range.location + 1];
+        NSData *data = [[NSData alloc] initWithBase64EncodedString:encodedRoomAccess options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        if (data) {
+            NSError *error = nil;
+            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
+            if (!error) {
+                isValid = YES;
+                self.roomName = dic[@"roomName"];
+                self.userID = dic[@"userId"];
             }
         }
     }

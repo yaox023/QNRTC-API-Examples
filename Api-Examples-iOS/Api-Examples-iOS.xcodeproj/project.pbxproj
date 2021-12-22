@@ -779,6 +779,8 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/Api-Examples-iOS/PrefixHeader.pch";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Api-Examples-iOS/Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Demo演示需要使用相机";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Demo演示需要使用麦克风";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -836,6 +838,8 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/Api-Examples-iOS/PrefixHeader.pch";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Api-Examples-iOS/Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Demo演示需要使用相机";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Demo演示需要使用麦克风";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
