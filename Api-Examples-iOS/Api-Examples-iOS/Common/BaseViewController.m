@@ -17,9 +17,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
+    self.alertQueue = dispatch_queue_create("com.api-examples.alert", DISPATCH_QUEUE_SERIAL);
     [self parseToken];
     [self loadBaseViews];
-    self.alertQueue = dispatch_queue_create("com.api-examples.alert", DISPATCH_QUEUE_SERIAL);
 }
 
 - (void)loadBaseViews {
